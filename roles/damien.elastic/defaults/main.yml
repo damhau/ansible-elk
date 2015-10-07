@@ -1,3 +1,4 @@
 ---
 # defaults file for damien.elastic
 es_ram: "1G"
+es_clustersize: "1"
