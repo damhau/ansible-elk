@@ -1,0 +1,7 @@
+---
+    - name: Add ES repo public signing key
+      rpm_key: key='https://packages.elasticsearch.org/GPG-KEY-elasticsearch' state=present 
+    - name: Add Curator repository
+      template: src=curator.repo dest=/etc/yum.repos.d/curator.repo   
+    - name: Install Curator
+      yum: name=curator state=present

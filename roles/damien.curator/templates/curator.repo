@@ -1,0 +1,6 @@
+[curator-3]
+name=CentOS/RHEL 6 repository for Elasticsearch Curator 3.x packages
+baseurl=http://packages.elasticsearch.org/curator/3/centos/6
+gpgcheck=1
+gpgkey=http://packages.elasticsearch.org/GPG-KEY-elasticsearch
+enabled=1

@@ -1,0 +1,6 @@
+---
+    - name: Restart elasticsearch
+      action: service name=elasticsearch state=restarted
+      
+    - name: Restart iptables
+      action: service name=iptables state=restarted

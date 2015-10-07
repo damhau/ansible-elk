@@ -1,0 +1,42 @@
+---
+    - name: Add ElasticSearch repo public signing key
+      rpm_key: key='https://packages.elastic.co/GPG-KEY-elasticsearch' state=present
+    
+    - name: Add ElasticSearch repository
+      template: src=elasticsearch.repo dest=/etc/yum.repos.d/elasticsearch.repo
+    
+    - name: Install ElasticSearch
+      yum: name=elasticsearch state=present
+    
+    - name: Copy /etc/sysconfig/elasticsearch
+      template: src=elasticsearch dest=/etc/sysconfig/elasticsearch
+    
+    - name: Create /etc/elasticsearch/elasticsearch.yml
+      template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
+      notify: Restart elasticsearch
+    
+    
+    
+    
+    - name: Open the correct IPTables ports
+      lineinfile: dest=/etc/sysconfig/iptables
+                  regexp="^-A INPUT -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT$"
+                  line="-A INPUT -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT"
+                  insertafter="^:OUTPUT ACCEPT \[\d*:\d*\]$"
+      with_items:
+        - { protocol: tcp, port: 9200 }
+        - { protocol: tcp, port: 9300 }
+      notify:
+        - Restart iptables    
+      when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "6"    
+ 
+    - name: Open the correct IPTables ports with Firewalld
+      firewalld: service=https permanent=true state=enabled
+      when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "7"      
+ 
+    
+    - name: ensure elasticsearch is running (and automatically at boot time)
+      action: service name=elasticsearch state=restarted enabled=yes
+  
+    - name: Install Head plugin
+      command: '/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head'

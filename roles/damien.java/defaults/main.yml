@@ -1,0 +1,19 @@
+---
+# defaults file for damien.java
+
+
+java_version: 8
+
+
+jdk7:
+    jdk_version:      1.7.0_80
+    jdk_tarball_file: jdk-7u80-linux-x64.rpm
+    jdk_tarball_url:  http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64.rpm
+
+jdk8:
+    jdk_version:      1.8.0_60
+    jdk_tarball_file: jdk-8u60-linux-x64.rpm
+    jdk_tarball_url:  http://download.oracle.com/otn-pub/java/jdk/8u60-b27/jdk-8u60-linux-x64.rpm
+
+
+jdk_download_path: /tmp

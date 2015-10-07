@@ -1,0 +1,30 @@
+{
+    "template": "cucm-cmr*",
+    "settings": {
+        "number_of_shards": 5,
+        "number_of_replicas": 1
+    },
+    "mappings": {
+        "cucm-cmr": {
+            "_source":{"enabled":true},
+            "properties": {
+				"cdrRecordType" : { "type" : "integer" },
+				"globalCallID_callManagerId" : { "type" : "integer" },				
+				"globalCallID_callId" : { "type" : "integer" },	
+				"callIdentifier" : { "type" : "integer" },	
+				"deviceName" : { "type" : "string" , "index": "not_analyzed"},
+				"dateTimeStamp" : { "type" : "integer" },	
+				"dateTimeStamp_formatted" : { "type" : "date" },
+				"numberPacketsSent" : { "type" : "integer" },	
+				"numberOctetsSent" : { "type" : "integer" },	
+				"numberPacketsReceived" : { "type" : "integer" },	
+				"numberOctetsReceived" : { "type" : "integer" },	
+				"dateTimeImport" : { "type" : "date" },	
+				"numberPacketsLost" : { "type" : "integer" },	
+				"jitter" : { "type" : "integer" },	
+				"latency" : { "type" : "integer" }		
+		
+		    }
+        }
+    }
+}

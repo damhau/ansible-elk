@@ -1,0 +1,74 @@
+---
+    - name: Add Logstash repo public signing key
+      rpm_key: key='https://packages.elasticsearch.org/GPG-KEY-elasticsearch' state=present 
+    - name: Add Logstash repository
+      template: src=logstash.repo dest=/etc/yum.repos.d/logstash.repo   
+    - name: Install Logstash
+      yum: name=logstash state=present
+    
+    - name: Copy /etc/sysconfig/logstash
+      template: src=logstash dest=/etc/sysconfig/logstash
+    - name: Copy cucm.conf
+      template: src=cucm.conf dest=/etc/logstash/conf.d/cucm.conf
+    - name: Copy elastic.conf
+      template: src=elastic.conf dest=/etc/logstash/conf.d/elastic.conf
+    - name: Copy nprobe.conf
+      template: src=nprobe.conf dest=/etc/logstash/conf.d/nprobe.conf
+   
+    - name: Creates templates directory
+      file: path=/etc/logstash/templates state=directory
+
+    - name: Copy cucm-cdr.json
+      template: src=cucm-cdr.json dest=/etc/logstash/templates/cucm-cdr.json
+    - name: Copy cucm-cmr.json
+      template: src=cucm-cmr.json dest=/etc/logstash/templates/cucm-cmr.json
+    - name: Copy logstash.json
+      template: src=logstash.json dest=/etc/logstash/templates/logstash.json
+    
+    
+    
+    - name: ensure logstash is running (and automatically at boot time)
+      action: service name=logstash state=restarted enabled=yes
+
+    - name: Install epel-release
+      yum: name=http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm state=present       
+ 
+    - name: Install zeromq3-devel
+      yum: name=zeromq3-devel state=present 
+    
+    - name: Load ES Template
+      command: 'curl -XPUT http://chbsuv-naesdb01.it.actelion.com:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
+    - name: Load ES Template
+      command: 'curl -XPUT http://chbsuv-naesdb01.it.actelion.com:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
+    - name: Load ES Template
+      command: 'curl -XPUT http://chbsuv-naesdb01.it.actelion.com:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
+    
+
+    - name: Create cucm user
+      user: name=cucm 
+        createhome=yes 
+        state=present
+    - name: Set password to user
+      shell: echo cucm:Sacdoh79 | sudo chpasswd
+      no_log: True     
+    
+    - name: Open the correct IPTables ports
+      lineinfile: dest=/etc/sysconfig/iptables
+                  regexp="^-A INPUT -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT$"
+                  line="-A INPUT -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT"
+                  insertafter="^:OUTPUT ACCEPT \[\d*:\d*\]$"
+      with_items:
+        - { protocol: tcp, port: 20 }
+        - { protocol: tcp, port: 21 }
+      notify:
+        - Restart iptables         
+        
+    - name: Install vsftpd
+      yum: name=vsftpd state=present 
+
+    - name: Copy vsftpd.conf
+      template: src=vsftpd.conf dest=/etc/vsftpd/vsftpd.conf
+  
+    - name: ensure vsftpd is running (and automatically at boot time)
+      action: service name=vsftpd state=restarted enabled=yes
+
