@@ -9,14 +9,11 @@
       yum: name=elasticsearch state=present
     
     - name: Copy /etc/sysconfig/elasticsearch
-      template: src=elasticsearch dest=/etc/sysconfig/elasticsearch
+      template: src=elasticsearch.sysconfig.j2 dest=/etc/sysconfig/elasticsearch
     
     - name: Create /etc/elasticsearch/elasticsearch.yml
       template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
       notify: Restart elasticsearch
-    
-    
-    
     
     - name: Open the correct IPTables ports
       lineinfile: dest=/etc/sysconfig/iptables
@@ -28,11 +25,14 @@
         - { protocol: tcp, port: 9300 }
       notify:
         - Restart iptables    
-      when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "6"    
+      when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"    
  
     - name: Open the correct IPTables ports with Firewalld
-      firewalld: service=https permanent=true state=enabled
-      when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "7"      
+      firewalld: port={{item.port}} permanent=true state=enabled immediate=true
+      with_items:
+        - { port: 9200/tcp }
+        - { port: 9300/tcp }
+      when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"      
  
     
     - name: ensure elasticsearch is running (and automatically at boot time)
@@ -40,3 +40,4 @@
   
     - name: Install Head plugin
       command: '/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head'
+      ignore_errors: yes

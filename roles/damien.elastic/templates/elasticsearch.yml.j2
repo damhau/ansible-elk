@@ -29,7 +29,7 @@
 # Cluster name identifies your cluster for auto-discovery. If you're running
 # multiple clusters on the same network, make sure you're using unique names.
 #
-cluster.name: es-network
+cluster.name: {{es_name}}
 
 
 #################################### Node #####################################
@@ -37,18 +37,18 @@ cluster.name: es-network
 # Node names are generated dynamically on startup, so you're relieved
 # from configuring them manually. You can tie this node to a specific name:
 #
-node.name: "{{ansible_fqdn}}"
+node.name: "{{ inventory_hostname }}"
 
 # Every node can be configured to allow or deny being eligible as the master,
 # and to allow or deny to store the data.
 #
 # Allow this node to be eligible as a master node (enabled by default):
 #
-#node.master: true
+node.master: {{es_master}}
 #
 # Allow this node to store data (enabled by default):
 #
-#node.data: true
+node.data: {{es_data}}
 
 # You can exploit these settings to design advanced cluster topologies.
 #
@@ -113,8 +113,8 @@ node.name: "{{ansible_fqdn}}"
 # Note, that for development on a local machine, with small indices, it usually
 # makes sense to "disable" the distributed features:
 #
-index.number_of_shards: 5
-index.number_of_replicas: 1
+index.number_of_shards: {{es_number_of_shards}}
+index.number_of_replicas: {{es_number_of_replicas}}
 
 # These settings directly affect the performance of index and search operations
 # in your cluster. Assuming you have enough machines to hold shards and
@@ -318,12 +318,12 @@ index.number_of_replicas: 1
 #
 # 1. Disable multicast discovery (enabled by default):
 #
-discovery.zen.ping.multicast.enabled: false
+# discovery.zen.ping.multicast.enabled: false
 #
 # 2. Configure an initial list of master nodes in the cluster
 #    to perform discovery when new nodes (master or data) are started:
 #
-discovery.zen.ping.unicast.hosts: ["chbsuv-naesdb01", "chbsuv-naesdb02", "chbsuv-naesdb03"]
+# discovery.zen.ping.unicast.hosts: ["chbsuv-naesdb01", "chbsuv-naesdb02", "chbsuv-naesdb03"]
 
 # EC2 discovery allows to use AWS EC2 API in order to perform discovery.
 #

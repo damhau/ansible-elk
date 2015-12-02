@@ -1,0 +1,45 @@
+---
+  - name: Create VM
+    delegate_to: localhost 
+    vsphere_guest:
+      vcenter_hostname: "192.168.200.161"
+      username: "a-dhr"
+      password: "Garfield11"
+      guest: "{{ inventory_hostname }}"
+      from_template: yes
+      template_src: AnsibleCentos7
+      cluster: LAB
+      resource_pool: "/Resources"
+
+  - name: Get IP for VM
+    delegate_to: localhost
+    vsphere_guest:
+        vmware_guest_facts: true
+        vcenter_hostname: "192.168.200.161"
+        username: "a-dhr"
+        password: "Garfield11"
+        guest: "{{ inventory_hostname }}"
+    register: newvm
+
+  - name: Wait for 60 sec for VM Tools to start    
+    pause: seconds=60
+    when: newvm.ansible_facts.hw_eth0.ipaddresses[0] is undefined
+ 
+  - name: Get IP for VM after waiting 60 sec
+    delegate_to: localhost
+    vsphere_guest:
+        vmware_guest_facts: true
+        vcenter_hostname: "192.168.200.161"
+        username: "a-dhr"
+        password: "Garfield11"
+        guest: "{{ inventory_hostname }}"
+    register: newvm
+    #when: newvm.ansible_facts.hw_eth0.ipaddresses[0] is undefined
+    
+  - name: Check VM ip addr
+    debug: msg="{{ newvm.ansible_facts.hw_eth0.ipaddresses[0] }}"
+
+
+  - name: Add VM to Inventory
+    add_host: name="{{ inventory_hostname }}" ansible_ssh_host="{{ newvm.ansible_facts.hw_eth0.ipaddresses[0] }}" ansible_ssh_user="root" ansible_ssh_pass="Inglab2015!!" group=temp_inventory
+

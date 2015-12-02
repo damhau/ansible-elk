@@ -1,0 +1,9 @@
+---
+- hosts: kib-vms
+  gather_facts: false
+  serial: 1
+  
+  roles:
+    - damien.createvm
+
+- include: kib-deploy.yml

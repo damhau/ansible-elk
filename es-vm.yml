@@ -1,0 +1,9 @@
+---
+- hosts: es-vms
+  gather_facts: false
+  serial: 1
+  
+  roles:
+    - damien.createvm
+
+- include: es-deploy.yml

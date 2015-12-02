@@ -6,35 +6,40 @@
 # See also: http://java.dzone.com/articles/installing-oracle-java6-ubuntu
 #
 
+# - debug: msg="Java_type {{ java_type }} has version {{ java_version }}"
 
-- name: get JDK 1.7 tarball (as RPM file)
+- name: get Oracle JDK 1.7 tarball (as RPM file)
   command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o {{ jdk7.jdk_tarball_file }}  {{ jdk7.jdk_tarball_url }}
   args:
     creates: "{{ jdk_download_path }}/jdk-tarball-{{ jdk7.jdk_version }}"
     chdir:   "{{ jdk_download_path }}"
-  when: java_version == 7
+  when: java_version == 7 and java_type == java
 
-- name: get JDK 1.8 tarball (as RPM file)
+- name: get Oracle JDK 1.8 tarball (as RPM file)
   command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o {{ jdk8.jdk_tarball_file }}  {{ jdk8.jdk_tarball_url }}
   args:
     creates: "{{ jdk_download_path }}/jdk-tarball-{{ jdk8.jdk_version }}"
     chdir:   "{{ jdk_download_path }}"
-  when: java_version == 8
+  when: java_version == 8 and java_type == java
 
-
-
-
-- name: install JDK 1.7
+- name: install Oracle JDK 1.7
   command: rpm --force -Uvh  {{ jdk7.jdk_tarball_file }}
   args:
     creates: "{{ jdk_download_path }}/jdk-{{ jdk7.jdk_version }}"
     chdir:   "{{ jdk_download_path }}"
-  when: java_version == 7
+  when: java_version == 7 and java_type == java
 
-- name: install JDK 1.8
+- name: install Oracle JDK 1.8
   command: rpm --force -Uvh  {{ jdk8.jdk_tarball_file }}
   args:
     creates: "{{ jdk_download_path }}/jdk-{{ jdk8.jdk_version }}"
     chdir:   "{{ jdk_download_path }}"
-  when: java_version == 8
+  when: java_version == 8 and java_type == java
 
+- name: Install OpenJDK 
+  yum: name={{item}} state=present
+  with_items:
+    - java-1.{{java_version}}.0-openjdk
+  when: java_version == "8" and java_type == "openjdk"
+
+  

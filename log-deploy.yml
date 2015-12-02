@@ -1,0 +1,11 @@
+---
+- hosts: temp_inventory
+  gather_facts: true
+  
+  roles:  
+    
+    - damien.prepare
+    - { role: "damien.java", java_version: "8", java_type: "openjdk" }
+    - { role: "damien.elastic", es_master: "false", es_data: "false" }
+    - damien.logstash
+    

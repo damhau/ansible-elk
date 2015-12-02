@@ -1,0 +1,13 @@
+---
+  - name: Delete VM
+    delegate_to: localhost 
+    vsphere_guest:
+      vcenter_hostname: "192.168.200.161"
+      username: "a-dhr"
+      password: "Garfield11"
+      guest: "{{ inventory_hostname }}"
+      state: absent
+      force: yes
+      
+      
+      

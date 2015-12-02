@@ -1,2 +1,7 @@
 ---
-# vars file for damien.logstash
+        datacenter: 'INGGVALAB'
+        esxi_host: '192.168.200.161'
+        notes: 'Created by Ansible'
+        vcenter_hostname: '192.168.200.161'
+        vcenter_user: 'a-dhr'
+        vcenter_pass: 'Garfield11'

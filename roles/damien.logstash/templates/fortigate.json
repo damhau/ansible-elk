@@ -1,0 +1,26 @@
+{
+    "template": "fortigate*",
+    "settings": {
+        "number_of_shards": {{es_number_of_shards}},
+        "number_of_replicas": {{es_number_of_replicas}}
+    },
+    "mappings": {
+        "fortigate": {
+            "_source":{"enabled":true},
+            "properties": {
+				"cpu" : { "type" : "integer" },
+				"dstip" : { "type" : "ip" },
+				"dstport" : { "type" : "integer" },
+				"duration" : { "type" : "integer" },
+				"mem" : { "type" : "integer" },
+				"rcvbyte" : { "type" : "integer" },
+				"rcvpkt" : { "type" : "integer" },
+				"sentbyte" : { "type" : "integer" },
+				"sentpkt" : { "type" : "integer" },
+				"srcip" : { "type" : "ip" },
+				"totalsession" : { "type" : "integer" }
+				
+            }
+        }
+    }
+}

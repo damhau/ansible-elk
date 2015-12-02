@@ -1,0 +1,10 @@
+---
+- hosts: temp_inventory
+  gather_facts: true
+  
+  roles:  
+    
+    - damien.prepare
+    - { role: "damien.java", java_version: "8", java_type: "openjdk" }
+    - damien.elastic
+    

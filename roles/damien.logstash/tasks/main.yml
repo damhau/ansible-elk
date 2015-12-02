@@ -24,33 +24,16 @@
       template: src=cucm-cmr.json dest=/etc/logstash/templates/cucm-cmr.json
     - name: Copy logstash.json
       template: src=logstash.json dest=/etc/logstash/templates/logstash.json
-    
-    
-    
-    - name: ensure logstash is running (and automatically at boot time)
-      action: service name=logstash state=restarted enabled=yes
-
+    - name: Copy fortigate.json
+      template: src=fortigate.json dest=/etc/logstash/templates/fortigate.json
     - name: Install epel-release
-      yum: name=http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm state=present       
+      yum: name=epel-release state=present       
  
     - name: Install zeromq3-devel
-      yum: name=zeromq3-devel state=present 
+      yum: name=zeromq3-devel state=present
     
-    - name: Load ES Template
-      command: 'curl -XPUT http://chbsuv-naesdb01.it.actelion.com:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
-    - name: Load ES Template
-      command: 'curl -XPUT http://chbsuv-naesdb01.it.actelion.com:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
-    - name: Load ES Template
-      command: 'curl -XPUT http://chbsuv-naesdb01.it.actelion.com:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
-    
-
-    - name: Create cucm user
-      user: name=cucm 
-        createhome=yes 
-        state=present
-    - name: Set password to user
-      shell: echo cucm:Sacdoh79 | sudo chpasswd
-      no_log: True     
+    - name: Install Logstash plugin
+      command: '/opt/logstash/bin/plugin install logstash-filter-translate'
     
     - name: Open the correct IPTables ports
       lineinfile: dest=/etc/sysconfig/iptables
@@ -58,17 +41,37 @@
                   line="-A INPUT -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT"
                   insertafter="^:OUTPUT ACCEPT \[\d*:\d*\]$"
       with_items:
-        - { protocol: tcp, port: 20 }
-        - { protocol: tcp, port: 21 }
+        - { protocol: tcp, port: 1514 }
+        - { protocol: udp, port: 1514 }
       notify:
-        - Restart iptables         
-        
-    - name: Install vsftpd
-      yum: name=vsftpd state=present 
+        - Restart iptables    
+      when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"    
+ 
+    - name: Open the correct IPTables ports with Firewalld
+      firewalld: port={{item.port}} permanent=true state=enabled immediate=true
+      with_items:
+        - { port: 1514/udp }
+        - { port: 1514/tcp }
+      when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"      
+    
+    
+    
+    
+    - name: ensure logstash is running (and automatically at boot time)
+      action: service name=logstash state=restarted enabled=yes
 
-    - name: Copy vsftpd.conf
-      template: src=vsftpd.conf dest=/etc/vsftpd/vsftpd.conf
-  
-    - name: ensure vsftpd is running (and automatically at boot time)
-      action: service name=vsftpd state=restarted enabled=yes
+    
+    - name: Load ES Template
+      command: 'curl -XPUT http://localhost:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
+    - name: Load ES Template
+      command: 'curl -XPUT http://localhost:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
+    - name: Load ES Template
+      command: 'curl -XPUT http://localhost:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
+    - name: Load ES Template
+      command: 'curl -XPUT http://localhost:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
+    
+
+      
+      
+
 
