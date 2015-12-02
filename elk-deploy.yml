@@ -1,0 +1,26 @@
+---
+- hosts: elk-all
+  gather_facts: true
+  roles:  
+    - damien.prepare
+
+
+
+- hosts: es-vms
+  gather_facts: true
+  roles:  
+    - { role: "damien.java", java_version: "8", java_type: "openjdk" }
+    - damien.elastic
+
+- hosts: log-vms
+  gather_facts: true
+  roles:  
+    - { role: "damien.java", java_version: "8", java_type: "openjdk" }
+    - damien.logstash   
+
+- hosts: kib-vms
+  gather_facts: true
+  roles:  
+    - { role: "damien.java", java_version: "8", java_type: "openjdk" }
+    - { role: "damien.elastic", es_master: "false", es_data: "false" }
+    - damien.kibana

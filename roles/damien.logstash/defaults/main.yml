@@ -1,2 +1,8 @@
 ---
-# defaults file for damien.logstash
+# defaults file for damien.elastic
+es_ram: "1G"
+es_number_of_shards: "5"
+es_number_of_replicas: "0"
+es_name: "es-cluster"
+es_master: "true"
+es_data: "true"

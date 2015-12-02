@@ -39,5 +39,11 @@
       action: service name=elasticsearch state=restarted enabled=yes
   
     - name: Install Head plugin
-      command: '/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head'
+      command: '/usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head'
       ignore_errors: yes
+      
+
+      
+
+      
+      

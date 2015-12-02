@@ -6,7 +6,7 @@
     - name: Install nginx
       yum: name=nginx state=present
     - name: Download Kibana
-      get_url: url='https://download.elastic.co/kibana/kibana/kibana-4.1.2-linux-x64.tar.gz' dest=/tmp/kibana.tar.gz
+      get_url: url='https://download.elastic.co/kibana/kibana/kibana-4.3.0-linux-x64.tar.gz' dest=/tmp/kibana.tar.gz
       
     - name: Extract and install Kibana
       unarchive: src=/tmp/kibana.tar.gz
@@ -15,11 +15,11 @@
              creates=/opt/kibana      
     
     - name: Check Kibana Folder
-      stat: path=/opt/kibana-4.1.2-linux-x64
+      stat: path=/opt/kibana-4.3.0-linux-x64
       register: kibana_stat
 
     - name: Move Kibana Folder
-      command: mv /opt/kibana-4.1.2-linux-x64 /opt/kibana
+      command: mv /opt/kibana-4.3.0-linux-x64 /opt/kibana
       when: kibana_stat.stat.exists
         
     - name: Configure Kibana service definition
@@ -42,9 +42,12 @@
     
     - name: Ensure default nginx site is not enabled
       file: state=absent path=/etc/nginx/conf.d/virtual.conf    
-
-
-
+    
+    - name: Change SELinux Config
+      selinux: state=disabled
+     
+    - name: Disable SELinux
+      command: setenforce 0
 
     - name: Create Kibana Config
       template: src=kibana.yml.j2 dest=/opt/kibana/config/kibana.yml

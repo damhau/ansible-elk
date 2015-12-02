@@ -200,7 +200,7 @@ index.number_of_replicas: {{es_number_of_replicas}}
 
 # Set the bind address specifically (IPv4 or IPv6):
 #
-#network.bind_host: 192.168.0.1
+network.host: 0.0.0.0
 
 # Set the address other nodes will use to communicate with this node. If not
 # set, it is automatically derived. It must point to an actual IP address.
@@ -323,7 +323,7 @@ index.number_of_replicas: {{es_number_of_replicas}}
 # 2. Configure an initial list of master nodes in the cluster
 #    to perform discovery when new nodes (master or data) are started:
 #
-# discovery.zen.ping.unicast.hosts: ["chbsuv-naesdb01", "chbsuv-naesdb02", "chbsuv-naesdb03"]
+discovery.zen.ping.unicast.hosts: ["{% for host in groups['es-vms'] %}{{ hostvars[host]['ansible_hostname']}}{%- if not loop.last %},{% endif -%}{% endfor %}"]
 
 # EC2 discovery allows to use AWS EC2 API in order to perform discovery.
 #

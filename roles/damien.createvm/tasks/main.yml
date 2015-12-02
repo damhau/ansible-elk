@@ -36,10 +36,7 @@
     register: newvm
     #when: newvm.ansible_facts.hw_eth0.ipaddresses[0] is undefined
     
-  - name: Check VM ip addr
-    debug: msg="{{ newvm.ansible_facts.hw_eth0.ipaddresses[0] }}"
-
-
+  
   - name: Add VM to Inventory
-    add_host: name="{{ inventory_hostname }}" ansible_ssh_host="{{ newvm.ansible_facts.hw_eth0.ipaddresses[0] }}" ansible_ssh_user="root" ansible_ssh_pass="Inglab2015!!" group=temp_inventory
+    add_host: name="{{ inventory_hostname }}" ansible_ssh_host="{{ newvm.ansible_facts.hw_eth0.ipaddresses[0] }}" ansible_ssh_user="root" ansible_ssh_pass="Inglab2015!!" group={{ vm_group }}
 

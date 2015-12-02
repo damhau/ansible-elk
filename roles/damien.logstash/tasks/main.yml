@@ -12,6 +12,8 @@
       template: src=cucm.conf dest=/etc/logstash/conf.d/cucm.conf
     - name: Copy elastic.conf
       template: src=elastic.conf dest=/etc/logstash/conf.d/elastic.conf
+    - name: Copy fortigate.conf
+      template: src=fortigate.conf dest=/etc/logstash/conf.d/fortigate.conf
     - name: Copy nprobe.conf
       template: src=nprobe.conf dest=/etc/logstash/conf.d/nprobe.conf
    
@@ -60,16 +62,24 @@
     - name: ensure logstash is running (and automatically at boot time)
       action: service name=logstash state=restarted enabled=yes
 
+ 
     
     - name: Load ES Template
-      command: 'curl -XPUT http://localhost:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
+      command: 'curl -XPUT http://{{ item }}:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
+      with_items: 
+      - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://localhost:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
+      command: 'curl -XPUT http://{{ item }}:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
+      with_items: 
+      - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://localhost:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
+      command: 'curl -XPUT http://{{ item }}:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
+      with_items: 
+      - "{{ groups['es-vms'] }}"    
     - name: Load ES Template
-      command: 'curl -XPUT http://localhost:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
-    
+      command: 'curl -XPUT http://{{ item }}:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
+      with_items: 
+      - "{{ groups['es-vms'] }}"    
 
       
       

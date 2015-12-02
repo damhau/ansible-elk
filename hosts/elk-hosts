@@ -6,3 +6,8 @@ INGGVALABDHRKIB[01:01]
 
 [log-vms]
 INGGVALABDHRLOG[01:01]
+
+[elk-all:children]
+es-vms
+kib-vms
+log-vms

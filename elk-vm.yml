@@ -1,0 +1,25 @@
+---
+- hosts: es-vms
+  gather_facts: false
+  serial: 1
+  
+  roles:
+  - { role: "damien.createvm", vm_group: "es-vms" }
+
+- hosts: log-vms
+  gather_facts: false
+  serial: 1
+  
+  roles:
+  - { role: "damien.createvm", vm_group: "log-vms" }    
+    
+
+- hosts: kib-vms
+  gather_facts: false
+  serial: 1
+  
+  roles:
+  - { role: "damien.createvm", vm_group: "kib-vms" }      
+    
+    
+- include: elk-deploy.yml
