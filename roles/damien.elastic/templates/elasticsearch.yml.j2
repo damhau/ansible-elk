@@ -318,12 +318,12 @@ network.host: 0.0.0.0
 #
 # 1. Disable multicast discovery (enabled by default):
 #
-# discovery.zen.ping.multicast.enabled: false
+discovery.zen.ping.multicast.enabled: false
 #
 # 2. Configure an initial list of master nodes in the cluster
 #    to perform discovery when new nodes (master or data) are started:
 #
-discovery.zen.ping.unicast.hosts: ["{% for host in groups['es-vms'] %}{{ hostvars[host]['ansible_hostname']}}{%- if not loop.last %},{% endif -%}{% endfor %}"]
+discovery.zen.ping.unicast.hosts: ["{{es_1st}}"]
 
 # EC2 discovery allows to use AWS EC2 API in order to perform discovery.
 #

@@ -1,11 +1,12 @@
 [es-vms]
-INGGVALABDHRES[01:01]
+INGGVALABDHRES01 es_1st=INGGVALABDHRES01
+
 
 [kib-vms]
-INGGVALABDHRKIB[01:01]
+INGGVALABDHRKIB01 ip_network=192.168.228 ip_addr=112
 
 [log-vms]
-INGGVALABDHRLOG[01:01]
+INGGVALABDHRLOG01 ip_network=192.168.228 ip_addr=113
 
 [elk-all:children]
 es-vms

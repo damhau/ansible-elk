@@ -16,7 +16,9 @@
       template: src=fortigate.conf dest=/etc/logstash/conf.d/fortigate.conf
     - name: Copy nprobe.conf
       template: src=nprobe.conf dest=/etc/logstash/conf.d/nprobe.conf
-   
+    - name: Copy esxi.conf
+      template: src=esxi.conf dest=/etc/logstash/conf.d/esxi.conf
+      
     - name: Creates templates directory
       file: path=/etc/logstash/templates state=directory
 
@@ -65,19 +67,19 @@
  
     
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item }}:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
+      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
       with_items: 
       - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item }}:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
+      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
       with_items: 
       - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item }}:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
+      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
       with_items: 
       - "{{ groups['es-vms'] }}"    
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item }}:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
+      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
       with_items: 
       - "{{ groups['es-vms'] }}"    
 
