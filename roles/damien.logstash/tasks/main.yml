@@ -35,10 +35,17 @@
  
     - name: Install zeromq3-devel
       yum: name=zeromq3-devel state=present
-    
-    - name: Install Logstash plugin
+ 
+
+    - name: Check if Logstash logstash-filter-translate plugin is installed
+      shell: ls -l /opt/logstash/vendor/bundle/jruby/1.9/gems/logstash-filter-translate-*/*gemspec
+      register: dumpfiles
+      ignore_errors: yes
+     
+    - name: Install Logstash plugin logstash-filter-translate
       command: '/opt/logstash/bin/plugin install logstash-filter-translate'
-    
+      when: dumpfiles.stderr.find("cannot") != -1
+  
     - name: Open the correct IPTables ports
       lineinfile: dest=/etc/sysconfig/iptables
                   regexp="^-A INPUT -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT$"
@@ -58,30 +65,26 @@
         - { port: 1514/tcp }
       when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"      
     
-    
-    
-    
     - name: ensure logstash is running (and automatically at boot time)
       action: service name=logstash state=restarted enabled=yes
-
- 
-    
+   
+   
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
+      command: 'curl -XPUT http://{{ item }}:9200/_template/logstash -d @/etc/logstash/templates/logstash.json'
       with_items: 
-      - "{{ groups['es-vms'] }}"
+        - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
+      command: 'curl -XPUT http://{{ item }}:9200/_template/cucm-cdr -d @/etc/logstash/templates/cucm-cdr.json'   
       with_items: 
-      - "{{ groups['es-vms'] }}"
+        - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
+      command: 'curl -XPUT http://{{ item }}:9200/_template/cucm-cmr -d @/etc/logstash/templates/cucm-cmr.json'
       with_items: 
-      - "{{ groups['es-vms'] }}"    
+        - "{{ groups['es-vms'] }}"
     - name: Load ES Template
-      command: 'curl -XPUT http://{{ item[0] }}:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
+      command: 'curl -XPUT http://{{ item }}:9200/_template/fortigate -d @/etc/logstash/templates/fortigate.json'
       with_items: 
-      - "{{ groups['es-vms'] }}"    
+        - "{{ groups['es-vms'] }}"
 
       
       

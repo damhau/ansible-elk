@@ -38,9 +38,12 @@
     - name: ensure elasticsearch is running (and automatically at boot time)
       action: service name=elasticsearch state=restarted enabled=yes
   
+    - stat: path=/usr/share/elasticsearch/plugins/head
+      register: es_head_file
+
     - name: Install Head plugin
       command: '/usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head'
-      ignore_errors: yes
+      when: es_head_file.stat.exists == False
       
 
       

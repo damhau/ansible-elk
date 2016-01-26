@@ -8,6 +8,7 @@
         password: "Garfield11"
         guest: "{{ inventory_hostname }}"
     register: newvm1
+    ignore_errors: yes
     
   - name: Create VM
     delegate_to: localhost 
@@ -48,7 +49,7 @@
     register: newvm
     #when: newvm.ansible_facts.hw_eth0.ipaddresses[0] is undefined
     
-  - debug: var=newvm.ansible_facts.hw_eth0.ipaddresses[0]
+  #- debug: var=newvm.ansible_facts.hw_eth0.ipaddresses[0]
   - name: Add VM to Inventory
     add_host: name="{{ inventory_hostname }}" ansible_ssh_host="{{ newvm.ansible_facts.hw_eth0.ipaddresses[0] }}" ansible_ssh_user="root" ansible_ssh_pass="Inglab2015!!" group={{ vm_group }}
 
